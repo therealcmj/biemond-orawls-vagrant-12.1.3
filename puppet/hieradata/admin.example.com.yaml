@@ -10,21 +10,21 @@ wls_middleware_home_dir:  &wls_middleware_home_dir  "/opt/oracle/middleware12c"
 
 
 # when you have just one domain on a server
-domain_name:                &domain_name                "Wls1213"
+domain_name:                &domain_name                "Wls12"
 domain_adminserver:         &domain_adminserver         "AdminServer"
 domain_adminserver_port:    &domain_adminserver_port    7001
 domain_nodemanager_port:    &domain_nodemanager_port    5556
 domain_wls_password:        &domain_wls_password        "weblogic1"
-domain_user_config_file:    "/home/oracle/oracle-Wls1213-WebLogicConfig.properties"
-domain_user_key_file:       "/home/oracle/oracle-Wls1213-WebLogicKey.properties"
+domain_user_config_file:    "/home/oracle/oracle-Wls12-WebLogicConfig.properties"
+domain_user_key_file:       "/home/oracle/oracle-Wls12-WebLogicKey.properties"
 
 domain_adminserver_address: &domain_adminserver_address "%{hiera('adminserver_address')}"
 domain_node1_address:       &domain_node1_address       "%{hiera('node1_address')}"
 domain_node2_address:       &domain_node2_address       "%{hiera('node2_address')}"
 
 orautils::os_domain:           *domain_name
-orautils::os_domain_path:      "/opt/oracle/wlsdomains/domains/Wls1213"
-orautils::node_mgr_path:       "/opt/oracle/wlsdomains/domains/Wls1213/bin"
+orautils::os_domain_path:      "/opt/oracle/wlsdomains/domains/Wls12"
+orautils::node_mgr_path:       "/opt/oracle/wlsdomains/domains/Wls12/bin"
 orautils::node_mgr_address:    *domain_adminserver_address
 orautils::wls_password:        *domain_wls_password
 orautils::wls_adminserver:     *domain_adminserver
@@ -41,7 +41,7 @@ wls_trust_keystore_passphrase:     &wls_trust_keystore_passphrase 'welcome'
 
 # create a standard domain with custom identity for the adminserver
 domain_instances:
-  'Wls1213':
+  'Wls12':
     domain_template:                       "standard"
     development_mode:                      false
     adminserver_listen_on_all_interfaces:  true
@@ -75,7 +75,7 @@ wls_setting_instances:
     custom_trust:              *wls_custom_trust
     trust_keystore_file:       *wls_trust_keystore_file
     trust_keystore_passphrase: *wls_trust_keystore_passphrase
-    require:                   Orawls::Domain[Wls1213]
+    require:                   Orawls::Domain[Wls12]
     debug_module:              true
     archive_path:              '/var/tmp/install/default_domain'
   'plain':
@@ -153,7 +153,7 @@ authentication_provider_instances:
     ensure:             'present'
     control_flag:       'SUFFICIENT'
     order:              '0'
-    before:             Wls_domain[Wls1213]
+    before:             Wls_domain[Wls12]
   # 'ActiveDirectoryAuthenticator':
   #   ensure:             'present'
   #   control_flag:       'SUFFICIENT'
@@ -161,7 +161,7 @@ authentication_provider_instances:
   #   attributes:         'Credential;GroupBaseDN;GroupFromNameFilter;GroupMembershipSearching;Host;MaxGroupMembershipSearchLevel;Principal;UserBaseDN;UserFromNameFilter;UserNameAttribute;Port'
   #   attributesvalues:   'password;DC=ad,DC=company,DC=org;(&(sAMAccountName=%g)(objectclass=group));limited;ad.company.org;0;CN=SER_WASadmin,OU=Service Accounts,DC=ad,DC=company,DC=org;DC=ad,DC=company,DC=org;(&(sAMAccountName=%u)(objectclass=user));sAMAccountName;389'
   #   order:              '1'
-  #   before:             Wls_domain[Wls1213]
+  #   before:             Wls_domain[Wls12]
 
 identity_asserter_instances:
   'DefaultIdentityAsserter':
@@ -170,18 +170,18 @@ identity_asserter_instances:
     activetypes:        'AuthenticatedUser'
     defaultmappertype:  'E'
     order:              '1'
-    before:             Wls_domain[Wls1213]
+    before:             Wls_domain[Wls12]
 
 
 wls_domain_instances:
-  'Wls1213':
+  'Wls12':
     ensure:                      'present'
     jpa_default_provider:        'org.eclipse.persistence.jpa.PersistenceProvider'
     jta_max_transactions:        '20000'
     jta_transaction_timeout:     '30'
     log_file_min_size:           '5000'
     log_filecount:               '10'
-    log_filename:                '/var/log/weblogic/Wls1213.log'
+    log_filename:                '/var/log/weblogic/Wls12.log'
     log_number_of_files_limited: '1'
     log_rotate_logon_startup:    '1'
     log_rotationtype:            'bySize'
@@ -189,11 +189,11 @@ wls_domain_instances:
 
 # subscribe on a domain change and restart the adminserver
 wls_adminserver_instances_domain:
-  'AdminServer_Wls1213':
+  'AdminServer_Wls12':
     ensure:                    'running'
     server_name:               *domain_adminserver
     domain_name:               *domain_name
-    domain_path:               "/opt/oracle/wlsdomains/domains/Wls1213"
+    domain_path:               "/opt/oracle/wlsdomains/domains/Wls12"
     os_user:                   *wls_os_user
     weblogic_home_dir:         *wls_weblogic_home_dir
     weblogic_user:             *wls_weblogic_user
@@ -206,7 +206,7 @@ wls_adminserver_instances_domain:
     trust_keystore_file:       *wls_trust_keystore_file
     trust_keystore_passphrase: *wls_trust_keystore_passphrase
     refreshonly:               true
-    subscribe:                 Wls_domain[Wls1213]
+    subscribe:                 Wls_domain[Wls12]
 
 
 user_instances:
@@ -439,11 +439,11 @@ server_instances:
 
 # subscribe on a adminserver change and restart the adminserver
 wls_adminserver_instances_server:
-  'AdminServer_Wls1213_2':
+  'AdminServer_Wls12_2':
     ensure:                    'running'
     server_name:               *domain_adminserver
     domain_name:               *domain_name
-    domain_path:               "/opt/oracle/wlsdomains/domains/Wls1213"
+    domain_path:               "/opt/oracle/wlsdomains/domains/Wls12"
     os_user:                   *wls_os_user
     weblogic_home_dir:         *wls_weblogic_home_dir
     weblogic_user:             *wls_weblogic_user
